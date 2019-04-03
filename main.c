@@ -1,6 +1,8 @@
 #include <stdio.h>
 
 int Encryption(void);
+int Decryption(void);
+
 int main() {
     char c;
     printf("Select an option: \na) Rotation Cypher\n");
@@ -17,7 +19,9 @@ int main() {
 }
 
 int Encryption(void) {
-    char str[500] = {"ABCDE fegh"};//Intiialising Word
+    char str[500];//Intiialising Word
+    printf("\nPhrase to be encrypted:\n");
+    scanf("%[^n]", str );
     int i;
     int key = 1; //Rotational Factor
         //For loop to get every value of the string
@@ -37,3 +41,5 @@ int Encryption(void) {
     printf("%s\n", str);
     return 0;
 }
+
+
