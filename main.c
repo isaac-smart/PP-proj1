@@ -96,15 +96,14 @@ int Sub_Cypher(void) {
         }
         else {
             t = 0;
-            for(p = 0; p < keysize; p++) { //to intialise key outside the input
-                fullkey[i] = a; //makes fullkey equal a
-                if(key[p] == fullkey[i] ) { //however if equals something already in key
+            fullkey[i] = a; //Full key eqauls a
+            for(p = 0; p <= keysize; p++) { //to intialise key outside the input
+                if(fullkey[p] == fullkey[i] ) { //however if equals something already in key
                     a++;
-                    fullkey[i]++;
-                    p=0;
                 }
                 
             }
+            fullkey[i] = a;
             a++;
 
         }
