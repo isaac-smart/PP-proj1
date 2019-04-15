@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <ctype.h>
 
 int Encryption(void);
 int Decryption(void);
@@ -6,9 +7,27 @@ int Sub_Cypher(void);
 int Sub_Decryption(void);
 
 int main() {
+    FILE *input;
+    input = fopen("input1", "r");
+    if(input == NULL) {
+        perror("fopen()"); 
+        return 0; 
+    } 
+    int tmp = 0;
+    char str[500];
+    while(feof(input) == 0) {
+        char c;
+        
+        fscanf(input, "%c", &c);
+        str[tmp] = c;
+        tmp++;
+        
+    }
+    printf("The Encryption or Decrytption inputted:\n%s\n", str);
+    //Above is putting input1 into string str
     char c;
     printf("Select an option: \na) Rotation Cypher\n");
-    printf("b) Rotation Cypher Attack(known key\nc) Substitution Cypher\n");
+    printf("b) Rotation Cypher Attack(known key)\nc) Substitution Cypher\n");
     printf("d) Substitution Cypher Attack(known key)\nSelection: ");
     scanf("%c", &c);
     switch(c) {
@@ -26,51 +45,46 @@ int main() {
     return 0;
 }
 
-int Encryption(void) {
-    char str[500];//Intiialising Word
+int Encryption() {
     int key;
-    printf("\nKey of encryption:<space> Phrase to be encrypted:\n");
+    int str[500];
+    printf("\nKey of encryption:(Number) <enter>\n");
     scanf("%d", &key);
-    scanf("%[^\n]s", str);
     int i;
-        //For loop to get every value of the string
-        for(i=0; i < 500 && str[i] != 0; i++) {
-            if(str[i] < 65); str[25]
-            else { //If whitespace no change occurs
-                if(str[i] >= 97 && str[i] <= 122) { 
-                    str[i] = str[i] - 32; //IF statement make Capital
-                }
-                str[i] = str[i] + (key % 26); //Encrypting
-                if(str[i] > 90) {
-                    /*If ASCII number exceeds 90 and is not going to 
-                    produce letter minus 26 to get letter*/
-                    str[i] = str[i] - 26;
-                }
+    for(i=0; i < 500 && str[i] != 0; i++) {
+        if(isupper(str[i]) || islower(str[i]) ) {
+            if(islower(str[i])) { 
+                str[i] = str[i] - 32; //IF statement make Capital
             }
+            str[i] = str[i] + (key % 26); //Encrypting
+            if(str[i] > 90) {
+                /*If ASCII number exceeds 90 and is not going to 
+                produce letter minus 26 to get letter*/
+                str[i] = str[i] - 26;
+            }        
         }
+    }
     printf("%s\n", str);
     return 0;
 }
 
 int Decryption() {
-    char str1[500];//Intiialising Decrytpion
+    char str[500];//Intiialising Decrytpion
     int key;
     printf("\nKey of decryption: <space> Phrase to be decrypted:\n");
     scanf("%d", &key);
-    scanf("%[^\n]s", str1);
+    scanf("%[^\n]s", str);
     int i;
         //For loop to get every value of the string
-    for(i=0; (i < 500) && (str1[i] != 0); i++) {
-        if(str1[i] < 65);
-        else {
-            str1[i] = str1[i] - (key % 26);
-            if(str1[i] < 65) {
-                str1[i] = str1[i] + 26;
+    for(i=0; (i < 500) && (str[i] != 0); i++) {
+        if(isupper(str[i])) {
+            str[i] = str[i] - (key % 26);
+            if(str[i] < 65) {
+                str[i] = str[i] + 26;
             }
         }
-
     }
-    printf("%s\n", str1);
+    printf("%s\n", str);
     return 0;
 }
 
@@ -83,16 +97,17 @@ int Sub_Cypher(void) {
     scanf("%s %d", key, &keysize);
     scanf("%[^\n]s", str);
     printf("\n");
-    int i;//key into code
-    int a = 65, z = 90; //the start usuallly a, z is the end
-    char fullkey[26];
+    printf("sizeof of array: %d\n", (int) sizeof(key));
+    int i;//variable used in for statement
+    int a = 65, z = 90; //variables used to create key
+    char fullkey[26]; //the string used to hold the whole 26 letter key
     int p;
-    for(i = 0; i < 26; i++) {
-        if(key[i] >= 97) {
+    /*for statement to create a full key(all individual 26 letters)
+    from inputted key*/
+    for( i = 0; i < 26; i++) { 
+        if(islower(key[i])) {
             key[i] = key[i] - 32;
         }
-    }
-    for( i = 0; i < 26; i++) { //for statement to intialise fullkey
         if(keysize > i) { //if part of word at code beginning
             fullkey[i] = key[i]; // makes it eqaul new key
             for(p=0; p < i; p++) { //unless already addressed(double letter)
@@ -117,19 +132,16 @@ int Sub_Cypher(void) {
             a++;//add for next number
         }
     }   
-    
+    // Substituting fullkey created into phrase that needs to be decrytpted
     for(i=0; i < 500; i++) {
-        if( islower(str[i])) {
+        if(islower(str[i])) {
             str[i] = str[i] - 32;
         }
-    }
-    for(i=0; i < 500; i++) {
-        if( isupper(str[i])) { //only code not whitespace or grammar
+        if(isupper(str[i])) { //only code not whitespace or grammar
             str[i] = str[i] - 65; // minus 65 to get number 0-25
             int p;
             p = str[i]; //make p equal this number
             str[i] = fullkey[p]; 
-
         }
     }
     printf("Encryption:\n");
@@ -140,4 +152,8 @@ int Sub_Cypher(void) {
 }
  int Sub_Decryption(void) {
      
+     return 0;
  }
+
+
+
