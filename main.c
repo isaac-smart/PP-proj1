@@ -5,21 +5,24 @@ char Encryption(int key, char c);
 char Decryption(int key, char c);
 int Sub_Cypher(void);
 int Sub_Decryption(void);
+char Unseen_Rotation_Cypher(char c);
 
 int main() {
     FILE *input;
-    input = fopen("input1", "r");
+    FILE *output;
+    input = fopen("input.txt", "r");
     if(input == NULL) {
         perror("fopen()"); 
         return 0; 
     } 
-
+    output = fopen("output.txt", "r+");
     //Menu key below
     int key;
     char menu;
     printf("Select an option: \na) Rotation Cypher\n");
     printf("b) Rotation Cypher Attack(known key)\nc) Substitution Cypher\n");
-    printf("d) Substitution Cypher Attack(known key)\nSelection: ");
+    printf("d) Substitution Cypher Attack(known key)\ne) Unknown Key Rotation Cypher");
+    printf("\nSelection: ");
     scanf("%c", &menu);
     switch(menu) {
         case 'a': 
@@ -30,6 +33,7 @@ int main() {
             fscanf(input, "%c", &c);
             c = Encryption(key, c);
             printf("%c", c);
+            fprintf(output, "%c", c);
         }
             break;
         case 'b': 
@@ -40,13 +44,27 @@ int main() {
             fscanf(input, "%c", &c);
             c = Decryption(key, c);
             printf("%c", c);
+            fprintf(output, "%c", c);
         }
             break;
         case 'c': 
             Sub_Cypher();
             break;
-        case 'd': Sub_Decryption();
+        case 'd': 
+            Sub_Decryption();
             break;
+        case 'e':
+        for(key = 0; key < 26; key++ ) {
+            while(feof(input) == 0) {
+                char c;
+                fscanf(input, "%c", &c);
+                c = Decryption(key, c);
+                printf("%c", c);
+                fprintf(output, "%c", c);
+            }
+            fseek(input, 0, SEEK_SET);
+        } 
+        break;
         default:
             printf("Unknown Selection\n");
     } 
@@ -147,7 +165,78 @@ int Sub_Cypher(void) {
     return 0;
 }
  int Sub_Decryption(void) {
-     
-     return 0;
+    char key[26];
+    int keysize;
+    keysize = 0;
+    printf("\nKey used to encrypt:\n");
+    scanf("%s", key);
+    int i;//variable used in for statement
+    for(i=0; key[i] != 0; i++) {
+        keysize++;
+    }
+    int a = 65, z = 90; //variables used to create key
+    char fullkey[26]; //the string used to hold the whole 26 letter key
+    int p;
+    /*for statement to create a full key(all individual 26 letters)
+    from inputted key*/
+    for( i = 0; i < 26; i++) { 
+        if(islower(key[i])) {
+            key[i] = key[i] - 32;
+        }
+        if(keysize > i) { //if part of word at code beginning
+            fullkey[i] = key[i]; // makes it eqaul new key
+            for(p=0; p < i; p++) { //unless already addressed(double letter)
+                if(key[p] == fullkey[i]) { //assigns to lowest available number
+                    fullkey[i] = z;
+                    z--;
+                }
+            }
+        }
+        else {
+            fullkey[i] = a; //Full key equal a for if statement
+            for(p = 0; (p < keysize); p++) { //to intialise key outside the input
+                    if(fullkey[p] == fullkey[i]) {
+                    a++;
+                    fullkey[i] = a;
+                    p = -1;
+//If any value in key equals the next desired number the number next in 
+//the alphabet is subbed into the key and the loop begins again
+                }
+            }
+            fullkey[i] = a; //make fullkey equal a again
+            a++;//add for next number
+        }
+    }
+    printf("Decryption:\n");
+    FILE *input;
+    FILE *output;
+    input = fopen("input.txt", "r");
+    if(input == NULL) {
+        perror("fopen()"); 
+        return 0; 
+    }
+    output = fopen("output.txt", "w");
+    while(feof(input) == 0) {
+        char c;
+        fscanf(input, "%c", &c);
+        
+        if(isupper(c)) { //only code not whitespace or grammar
+             //make p equal this number
+            int p = 0;
+            while(c != fullkey[p]) {
+                p++;
+            }
+            p = p + 65;
+            c = p;
+            
+        }
+        printf("%c", c);
+        fprintf(output, "%c", c);
+    }
+    return 0;
  }
 
+char Unseen_Rotation_Cypher(char c){
+    
+    return c;
+}
