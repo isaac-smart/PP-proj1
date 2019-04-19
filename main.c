@@ -5,7 +5,6 @@ char Encryption(int key, char c);
 char Decryption(int key, char c);
 int Sub_Cypher(void);
 int Sub_Decryption(void);
-char Unseen_Rotation_Cypher(char c);
 
 int main() {
     FILE *input;
@@ -28,6 +27,7 @@ int main() {
         case 'a': 
         printf("\nKey of encryption:(Number) <enter>\n");
         scanf("%d", &key);
+        printf("Rotation Encryption:\n");
         while(feof(input) == 0) {
             char c;
             fscanf(input, "%c", &c);
@@ -39,6 +39,7 @@ int main() {
         case 'b': 
         printf("\nKey used to encrypt:(Number) <enter>\n");
         scanf("%d", &key);
+        printf("Rotation Decryption:\n");
         while(feof(input) == 0) {
             char c;
             fscanf(input, "%c", &c);
@@ -100,11 +101,17 @@ int Sub_Cypher(void) {
     char key[26];
     int keysize;
     keysize = 0;
-    printf("\nKey of encryption:\n");
+    printf("\nKey of encryption:(singular phrase with only letters) <enter>\n");
     scanf("%s", key);
     int i;//variable used in for statement
     for(i=0; key[i] != 0; i++) {
-        keysize++;
+        if(isalpha(key[i])) {
+            keysize++;
+        }
+        else {
+            printf("Incorrect Key/n");
+            return 0;
+        }
     }
     int a = 65, z = 90; //variables used to create key
     char fullkey[26]; //the string used to hold the whole 26 letter key
@@ -140,13 +147,15 @@ int Sub_Cypher(void) {
         }
     }  
     // Substituting fullkey created into phrase that needs to be decrytpted
-    printf("Encryption:\n");
+    printf("Substitution Encryption:");
     FILE *input;
-    input = fopen("input1", "r");
+    FILE *output;
+    input = fopen("input.txt", "r");
     if(input == NULL) {
         perror("fopen()"); 
         return 0; 
     }
+    output = fopen("input.txt", "w");
     while(feof(input) == 0) {
         char c;
         fscanf(input, "%c", &c);
@@ -161,6 +170,7 @@ int Sub_Cypher(void) {
             c = fullkey[p]; 
         }
         printf("%c", c);
+        fprintf(output, "%c", c);
     }
     return 0;
 }
@@ -168,11 +178,17 @@ int Sub_Cypher(void) {
     char key[26];
     int keysize;
     keysize = 0;
-    printf("\nKey used to encrypt:\n");
+    printf("\nKey used to encrypt:(singular phrase with only letters) <enter>\n");
     scanf("%s", key);
     int i;//variable used in for statement
     for(i=0; key[i] != 0; i++) {
-        keysize++;
+        if(isalpha(key[i])) {
+            keysize++;
+        }
+        else {
+            printf("Incorrect Key/n");
+            return 0;
+        }
     }
     int a = 65, z = 90; //variables used to create key
     char fullkey[26]; //the string used to hold the whole 26 letter key
@@ -207,7 +223,7 @@ int Sub_Cypher(void) {
             a++;//add for next number
         }
     }
-    printf("Decryption:\n");
+    printf("Substituition Decryption:\n");
     FILE *input;
     FILE *output;
     input = fopen("input.txt", "r");
@@ -235,8 +251,3 @@ int Sub_Cypher(void) {
     }
     return 0;
  }
-
-char Unseen_Rotation_Cypher(char c){
-    
-    return c;
-}
