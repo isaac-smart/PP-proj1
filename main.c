@@ -5,6 +5,8 @@ char Encryption(int key, char c);
 char Decryption(int key, char c);
 int Sub_Cypher(void);
 int Sub_Decryption(void);
+int Day_1_Sub_Decrytpion(void);
+
 
 int main() {
     FILE *input;
@@ -23,6 +25,7 @@ int main() {
     printf("Select an option: \na) Rotation Cypher\n");
     printf("b) Rotation Cypher Attack(known key)\nc) Substitution Cypher\n");
     printf("d) Substitution Cypher Attack(known key)\ne) Unknown Key Rotation Cypher");
+    printf("\nf) Day 1 Substitution Cypher(1)");
     printf("\nSelection: ");
     scanf("%c", &menu);
     switch(menu) {
@@ -72,8 +75,8 @@ int main() {
                 printf("%c", c);
                 fprintf(output, "%c", c);
             }
-
             fseek(output, 0, SEEK_SET);
+            //Testing the similarity first 5 words against the most common 10 000 words
             char testing[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', '\0'};
             fscanf(output, "%s", testing);
             char testing1[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', '\0'};
@@ -102,7 +105,7 @@ int main() {
                 if(strcmp(testing4, dictionary) == 0) {
                 words++;
                 }
-                if(words >= 2) {
+                if(words >= 2) { //if two words
                     t = 10000;
                     key = 26;
                 }
@@ -121,6 +124,9 @@ int main() {
             printf("THE PHRASE IS FOUND\n");
         }
         break;
+        case 'f':
+        Day_1_Sub_Decryption();
+        break;
         default:
             printf("Unknown Selection\n");
     } 
@@ -128,27 +134,33 @@ int main() {
 }
 
 char Encryption(int key, char c) {
-        if(isupper(c) || islower(c) ) {
-            if(islower(c)) { 
-                c = c - 32; //IF statement make Capital
-            }
-            c = c + (key % 26); //Encrypting
-            if(c > 90) {
-                /*If ASCII number exceeds 90 and is not going to 
-                produce letter minus 26 to get letter*/
-                c = c - 26;
-            }        
+    while(key <= 0) {
+        key = key + 26;
+    }
+    if(isupper(c) || islower(c) ) {
+        if(islower(c)) { 
+            c = c - 32; //IF statement make Capital
         }
+        c = c + (key % 26); //Encrypting
+        if(c > 90) {
+            /*If ASCII number exceeds 90 and is not going to 
+            produce letter minus 26 to get letter*/
+            c = c - 26;
+        }        
+    }
     return c;
 }
 
 char Decryption(int key, char c) {
-        if(isupper(c)) {
-            c = c - (key % 26);
-            if(c < 65) {
-                c = c + 26;
-            }
+    while(key <= 0) {
+        key = key + 26;
+    }
+    if(isupper(c)) {
+        c = c - (key % 26);
+        if(c < 65) {
+            c = c + 26;
         }
+    }
     return c;
 }
 
@@ -299,10 +311,40 @@ int Sub_Cypher(void) {
             }
             p = p + 65;
             c = p;
-            
         }
         printf("%c", c);
         fprintf(output, "%c", c);
     }
     return 0;
  }
+ 
+ int Day_1_Sub_Decryption(void) {
+    char fullkey[] = {'N', 'W', 'L', 'R', 'B', 'M', 'Q', 'H', 'C', 'D', 'A', 'Z', 'O', 'K', 'Y', 'I', 'Q', 'X', 'J', 'F', 'E', 'G', 'P', 'X', 'V', 'Z', '\0'};
+    printf("Substituition Decryption:\n");
+    FILE *input;
+    FILE *output;
+    input = fopen("input.txt", "r");
+    if(input == NULL) {
+        perror("fopen()"); 
+        return 0; 
+    }
+    output = fopen("output.txt", "w");
+    while(feof(input) == 0) {
+        char c;
+        fscanf(input, "%c", &c);
+        
+        if(isupper(c)) { //only code not whitespace or grammar
+             //make p equal this number
+            int p = 0;
+            while(c != fullkey[p]) {
+                p++;
+            }
+            p = p + 65;
+            c = p;
+        }
+        printf("%c", c);
+        fprintf(output, "%c", c);
+    }
+    return 0;
+ }
+ 
