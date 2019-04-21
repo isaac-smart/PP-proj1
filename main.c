@@ -9,12 +9,14 @@ int Sub_Decryption(void);
 int main() {
     FILE *input;
     FILE *output;
+    FILE *read;
     input = fopen("input.txt", "r");
     if(input == NULL) {
         perror("fopen()"); 
         return 0; 
     } 
-    output = fopen("output.txt", "r+");
+    output = fopen("output.txt", "w+");
+    read = fopen("google-10000-english.txt", "r");
     //Menu key below
     int key;
     char menu;
@@ -36,6 +38,7 @@ int main() {
             fprintf(output, "%c", c);
         }
             break;
+            
         case 'b': 
         printf("\nKey used to encrypt:(Number) <enter>\n");
         scanf("%d", &key);
@@ -48,23 +51,75 @@ int main() {
             fprintf(output, "%c", c);
         }
             break;
+            
         case 'c': 
-            Sub_Cypher();
-            break;
+        Sub_Cypher();
+        break;
+            
         case 'd': 
-            Sub_Decryption();
-            break;
+        Sub_Decryption();
+        break;
+        
         case 'e':
-        for(key = 0; key < 26; key++ ) {
+        for(key = 0; key < 26; key++) {
+            char c; 
+            int t;
+            int words = 0;
             while(feof(input) == 0) {
-                char c;
                 fscanf(input, "%c", &c);
-                c = Decryption(key, c);
+                c = Encryption(key, c);
+                c = tolower(c);
                 printf("%c", c);
                 fprintf(output, "%c", c);
             }
-            fseek(input, 0, SEEK_SET);
-        } 
+
+            fseek(output, 0, SEEK_SET);
+            char testing[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', '\0'};
+            fscanf(output, "%s", testing);
+            char testing1[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', '\0'};
+            fscanf(output, "%s", testing1);
+            char testing2[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', '\0'};
+            fscanf(output, "%s", testing2);
+            char testing3[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', '\0'};
+            fscanf(output, "%s", testing3);
+            char testing4[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', '\0'};
+            fscanf(output, "%s", testing4);
+            for(t=0; t < 10000; t++) {
+                char dictionary[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', '\0'};
+                fscanf(read, "%s", dictionary);    
+                if(strcmp(testing, dictionary) == 0) {
+                words++;
+                }
+                if(strcmp(testing1, dictionary) == 0) {
+                words++;
+                }
+                if(strcmp(testing2, dictionary) == 0) {
+                words++;
+                }
+                if(strcmp(testing3, dictionary) == 0) {
+                words++;
+                }
+                if(strcmp(testing4, dictionary) == 0) {
+                words++;
+                }
+                if(words >= 2) {
+                    t = 10000;
+                    key = 26;
+                }
+            }
+                  
+            /*if first word in the output.txt aligns with the first 1000 words of dictionary
+            then it keeps that key in output*/
+                fseek(input, 0, SEEK_SET);
+                fseek(output, 0, SEEK_SET);
+                fseek(read, 0, SEEK_SET);
+        }
+        if(key == 26) {
+            printf("NO PHRASE FOUND\n");
+        }
+        if(key == 27) {
+            printf("THE PHRASE IS FOUND\n");
+        }
         break;
         default:
             printf("Unknown Selection\n");
@@ -147,7 +202,7 @@ int Sub_Cypher(void) {
         }
     }  
     // Substituting fullkey created into phrase that needs to be decrytpted
-    printf("Substitution Encryption:");
+    printf("Substitution Encryption:\n");
     FILE *input;
     FILE *output;
     input = fopen("input.txt", "r");
@@ -155,7 +210,7 @@ int Sub_Cypher(void) {
         perror("fopen()"); 
         return 0; 
     }
-    output = fopen("input.txt", "w");
+    output = fopen("output.txt", "w");
     while(feof(input) == 0) {
         char c;
         fscanf(input, "%c", &c);
