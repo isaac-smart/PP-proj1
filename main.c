@@ -1,3 +1,11 @@
+/*ISAAC SMART C3329492
+Programming Assignment 1 : ENGG1003
+Encryption and Decryption of messages
+The code below allows the user to use encrypt a message in input.txt file using rotation and substitution 
+encryption. The encrypted message is displayed through the terminal but is also sent to output.txt. It can also
+decrypt
+
+ */
 #include <stdio.h>
 #include <ctype.h>
 
@@ -5,7 +13,8 @@ char Encryption(int key, char c);
 char Decryption(int key, char c);
 int Sub_Cypher(void);
 int Sub_Decryption(void);
-int Day_1_Sub_Decrytpion(void);
+int Rotation_Decryption(void);
+int Day_1_Sub_Decryption(void);
 
 
 int main() {
@@ -19,7 +28,11 @@ int main() {
     } 
     output = fopen("output.txt", "w+");
     read = fopen("google-10000-english.txt", "r");
-    //Menu key below
+    if(read == NULL) {
+        perror("fopen()"); 
+        return 0; 
+    } 
+    //Menu is below
     int key;
     char menu;
     printf("Select an option: \na) Rotation Cypher\n");
@@ -64,69 +77,13 @@ int main() {
         break;
         
         case 'e':
-        for(key = 0; key < 26; key++) {
-            char c; 
-            int t;
-            int words = 0;
-            while(feof(input) == 0) {
-                fscanf(input, "%c", &c);
-                c = Encryption(key, c);
-                c = tolower(c);
-                printf("%c", c);
-                fprintf(output, "%c", c);
-            }
-            fseek(output, 0, SEEK_SET);
-            //Testing the similarity first 5 words against the most common 10 000 words
-            char testing[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', '\0'};
-            fscanf(output, "%s", testing);
-            char testing1[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', '\0'};
-            fscanf(output, "%s", testing1);
-            char testing2[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', '\0'};
-            fscanf(output, "%s", testing2);
-            char testing3[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', '\0'};
-            fscanf(output, "%s", testing3);
-            char testing4[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', '\0'};
-            fscanf(output, "%s", testing4);
-            for(t=0; t < 10000; t++) {
-                char dictionary[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', '\0'};
-                fscanf(read, "%s", dictionary);    
-                if(strcmp(testing, dictionary) == 0) {
-                words++;
-                }
-                if(strcmp(testing1, dictionary) == 0) {
-                words++;
-                }
-                if(strcmp(testing2, dictionary) == 0) {
-                words++;
-                }
-                if(strcmp(testing3, dictionary) == 0) {
-                words++;
-                }
-                if(strcmp(testing4, dictionary) == 0) {
-                words++;
-                }
-                if(words >= 2) { //if two words
-                    t = 10000;
-                    key = 26;
-                }
-            }
-                  
-            /*if first word in the output.txt aligns with the first 1000 words of dictionary
-            then it keeps that key in output*/
-                fseek(input, 0, SEEK_SET);
-                fseek(output, 0, SEEK_SET);
-                fseek(read, 0, SEEK_SET);
-        }
-        if(key == 26) {
-            printf("NO PHRASE FOUND\n");
-        }
-        if(key == 27) {
-            printf("THE PHRASE IS FOUND\n");
-        }
+        Rotation_Decryption();
         break;
+        
         case 'f':
         Day_1_Sub_Decryption();
         break;
+        
         default:
             printf("Unknown Selection\n");
     } 
@@ -218,10 +175,6 @@ int Sub_Cypher(void) {
     FILE *input;
     FILE *output;
     input = fopen("input.txt", "r");
-    if(input == NULL) {
-        perror("fopen()"); 
-        return 0; 
-    }
     output = fopen("output.txt", "w");
     while(feof(input) == 0) {
         char c;
@@ -294,10 +247,6 @@ int Sub_Cypher(void) {
     FILE *input;
     FILE *output;
     input = fopen("input.txt", "r");
-    if(input == NULL) {
-        perror("fopen()"); 
-        return 0; 
-    }
     output = fopen("output.txt", "w");
     while(feof(input) == 0) {
         char c;
@@ -318,16 +267,101 @@ int Sub_Cypher(void) {
     return 0;
  }
  
+ int Rotation_Decryption(void){
+    int key;
+     FILE *input;
+    FILE *output;
+    FILE *read;
+    input = fopen("input.txt", "r");
+    output = fopen("output.txt", "w+");
+    read = fopen("google-10000-english.txt", "r");
+    int foundkey;
+    for(key = 0; key < 26; key++) {
+        char c; 
+        int t;        
+        int words = 0;
+        while(feof(input) == 0) {
+            fscanf(input, "%c", &c);
+            c = Encryption(key, c);
+            c = tolower(c);
+            fprintf(output, "%c", c);
+        }
+        fseek(output, 0, SEEK_SET); //Resetting the position of the output so it can be read
+        //Testing the similarity first 7 words of the message with decryption gainst the most common 10 000 words
+        char testing[] = {'-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '\0'};
+        fscanf(output, "%s", testing);
+        char testing1[] = {'-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '\0'};
+        fscanf(output, "%s", testing1);
+        char testing2[] = {'-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '\0'};
+        fscanf(output, "%s", testing2);
+        char testing3[] = {'-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '\0'};
+        fscanf(output, "%s", testing3);
+        char testing4[] = {'-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '\0'};
+        fscanf(output, "%s", testing4);
+        char testing5[] = {'-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '\0'};
+        fscanf(output, "%s", testing5);
+        char testing6[] = {'-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '\0'};
+        fscanf(output, "%s", testing6);
+        for(t=0; t < 10000; t++) {
+            char dictionary[] = {'-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '\0'};
+            fscanf(read, "%s", dictionary);    
+            if(strcmp(testing, dictionary) == 0) {
+                words++;
+            }
+            if(strcmp(testing1, dictionary) == 0) {
+                words++;
+            }
+            if(strcmp(testing2, dictionary) == 0) {
+                words++;
+            }
+            if(strcmp(testing3, dictionary) == 0) {
+                words++;
+            }
+            if(strcmp(testing4, dictionary) == 0) {
+                words++;
+            }
+            if(strcmp(testing5, dictionary) == 0) {
+                words++;
+            }
+            if(strcmp(testing6, dictionary) == 0) {
+                words++;
+            }
+            if(words >= 5) { //if two words are correct
+                t = 10000;
+                foundkey = key;
+                key = 50;
+                
+            }
+        }
+              
+        /*if first word in the output.txt aligns with the first 1000 words of dictionary
+        then it keeps that key in output*/
+        fseek(input, 0, SEEK_SET); //return all inputs to zero
+        fseek(output, 0, SEEK_SET);
+        fseek(read, 0, SEEK_SET);
+    }
+    if(key == 26) {
+        printf("NO PHRASE FOUND\n");
+    }
+    if(key == 51) {
+        printf("THE PHRASE IS FOUND\n");
+        char c;
+        while(feof(input) == 0) {
+            fscanf(input, "%c", &c);
+            c = Encryption(foundkey, c);
+            printf("%c", c);
+            fprintf(output, "%c", c);
+        }
+    }
+    return 0;
+}
+ 
  int Day_1_Sub_Decryption(void) {
-    char fullkey[] = {'N', 'W', 'L', 'R', 'B', 'M', 'Q', 'H', 'C', 'D', 'A', 'Z', 'O', 'K', 'Y', 'I', 'Q', 'X', 'J', 'F', 'E', 'G', 'P', 'X', 'V', 'Z', '\0'};
+    char fullkey[] = {'N', 'W', 'L', 'R', 'B', 'M', 'Q', 'H', 'C', 'D', 'A', 'Z', 'O', 'K', 'Y', 'I', 'S', 'X', 'J', 'F', 'E', 'G', 'P', 'U', 'V', 'T', '\0'};
     printf("Substituition Decryption:\n");
     FILE *input;
     FILE *output;
     input = fopen("input.txt", "r");
-    if(input == NULL) {
-        perror("fopen()"); 
-        return 0; 
-    }
     output = fopen("output.txt", "w");
     while(feof(input) == 0) {
         char c;
