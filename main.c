@@ -5,14 +5,16 @@ The code below allows the user to use encrypt a message in input.txt file using 
 encryption. The encrypted message is printed to the terminal but also sent to output.txt file. It can also
 decrypt messages from input.txt with a known key for both encryption types. A rotation decryption can also
 be done without a known key through a brute force attack which checks the spelling of the first couple words. 
-A day one substitution decryption is also found through hard coding the key used. These different tasks can be
-completed through a menu which allows the user to select each given task and then exits out of main. 
+A day one substitution decryption is also found through hard coding the key used and tried a unseen text cypher
+using the frequency of letters. These different tasks can be completed through a menu which allows the user to 
+select each given task and then exits out of main. 
 
 The message is inputted by changing input.txt to the message wanting to be encrypted or decrypted.
 All other inputs other than the message are inputted through scanf in the terminal.
  */
 #include <stdio.h>
 #include <ctype.h>
+#include <string.h>
 
 //The different functions used within the code
 char Encryption(int key, char c);
@@ -21,6 +23,7 @@ int Sub_Cypher(void);
 int Sub_Decryption(void);
 int Rotation_Decryption(void);
 int Day_1_Sub_Decryption(void);
+int Unseen_Sub_Decryption(void);
 
 
 int main() {
@@ -53,8 +56,8 @@ int main() {
     printf("Select an option: \na) Rotation Cypher\n");
     printf("b) Rotation Cypher Attack(known key)\nc) Substitution Cypher\n");
     printf("d) Substitution Cypher Attack(known key)\ne) Unknown Key Rotation Cypher");
-    printf("\nf) Day 1 Substitution Cypher");
-    printf("\nSelection: ");
+    printf("\nf) Day 1 Substitution Cypher\ng) Substitution Decryption using frequency of letters\n");
+    printf("Selection: ");
     scanf("%c", &menu);
     switch(menu) {
         /*
@@ -105,6 +108,10 @@ int main() {
         Day_1_Sub_Decryption();
         break;
         
+        case 'g':
+        Unseen_Sub_Decryption();
+        break;
+        
         //If the input is not valid it prints the error message
         default:
             printf("ERROR: Unknown Selection\n");
@@ -150,7 +157,11 @@ to the key. It along with the rest of the functions below have no arguments and 
 the difficulty of passing whole arrays through functions.
  */
 int Sub_Cypher(void) {
-//First Part - creation of the key
+/*First Part - creation of the key
+This first part allows for an input of a word or phrase(uppercase or lowercase letters) to be scanned into the 
+terminal and outputs a specific key. For example if 'zebra' is put into the terminal ZEBRACDFGHIJKLMNOPQSTUVWXY
+would be the key. Double letters are also considered and also allows for inputting entire 26 letter key.
+*/
     char key[26];
     int keysize;
     keysize = 0; 
@@ -231,7 +242,7 @@ The Substitution decryption has two parts: the intialising of the key (similar t
 but also has the decrypting of the message using the key.
  */
 int Sub_Decryption(void) {
-//First Part: The same as substitution encryption so not commented
+//First Part: The same as substitution encryption so not commented. Didnt make function as its difficult to pass entire array.
     char key[26];
     int keysize;
     keysize = 0;
@@ -425,4 +436,82 @@ int Day_1_Sub_Decryption(void) {
     }
     return 0;
  }
- 
+
+/*
+This is a Subsitution Decryption below uses a statistical attack where the letter frequency is tested
+for the message inputted and then due to frequency of term is substituted as a certain letter. This 
+code will not 100% work but some letters maybe correct once printed.
+ */
+int Unseen_Sub_Decryption(void) {
+    FILE *input;
+    FILE *output;
+    input = fopen("input.txt", "r");
+    output = fopen("output.txt", "w");
+    char c; //To take charactes from the input
+    char fullkey[] = {"**************************"}; //Place a new key within
+    char letterfrequency[] = {"ZXQJKVBPYGFWMUCLDRHSNIOATE"};
+    /*
+    The frequency of letters in the english language from least common to most following
+    Robert Lewand's Cryptological Mathematics data. 
+     */
+    int i, j;//Variables for For statements
+    int counting[] = {'0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '\0'};;
+    //Intialised a array which holds the frequency of letters, first number being A to the last number being Z 
+    while(feof(input) == 0) {
+        fscanf(input, "%c", &c);
+        if(isalpha(c)) { //If input is a letter 
+            c = tolower(c); //Change all to lowercase
+            for(i=97; i<123; i++) {//Checks all lowercase numbers
+                if(c == i){ //If input is the assigned lowercase number
+                    int temp;
+                    temp = i;
+                    temp = temp - 97;//Temp becomes a number 0-25 or A to Z
+                    counting[temp]++;//Added 1 to the counting array for the frequency of A to Z
+                }
+            }
+        } 
+    }
+
+/*
+ This for statement compares each number in the counting array against every other
+ element of the array and if larger adds 1 to a. Once all have been compared a new 
+ array is formed fullkey, which has the substitution in due to frequency.
+ */
+    int a; //Intialising another variable a
+    for (i = 0; i < 26; i++) {
+        a = 0; //Make a = 0 after every loop
+        for (j =0 ; j < 26; j++) {
+            if (counting[i] > counting[j]) {
+                a++;
+            }
+        }
+        
+        fullkey[i] = letterfrequency[a];
+    }
+    
+    fseek(input, 0, SEEK_SET);//Return the input read to the starting position to be read again
+    while(feof(input) == 0) { //Similar to substitution decryption as we now have a fullkey of 26 letters in order
+        char c;
+        fscanf(input, "%c", &c); //get char from input
+        if(islower(c)) { //If lowercase make uppercase
+            c = c - 32;
+        }
+        if(isupper(c)) { //only message is changed not whitespace or grammar
+             //make p equal this number
+            int p = 0;
+            while(c != fullkey[p]) {
+                p++;
+            }
+            p = p + 65; //add 65 to p to put in ASCII character range for uppercase letters
+            c = p; //make p a char c
+            if(!isupper(c)) {
+                c = 42;//make astrix if value not found
+            }
+        }
+        printf("%c", c);
+        fprintf(output, "%c", c); //print c to the terminal and output.txt
+    }
+    printf("\nAt Least I Tried...\n");
+    return 0;
+}
+
