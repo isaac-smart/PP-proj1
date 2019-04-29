@@ -56,7 +56,7 @@ int main() {
     printf("Select an option: \na) Rotation Cypher\n");
     printf("b) Rotation Cypher Attack(known key)\nc) Substitution Cypher\n");
     printf("d) Substitution Cypher Attack(known key)\ne) Unknown Key Rotation Cypher");
-    printf("\nf) Day 1 Substitution Cypher\ng) Substitution Decryption using frequency of letters\n");
+    printf("\nf) Day 1 Substitution Cypher previously\ng) Substitution Decryption using frequency of letters\n");
     printf("Selection: ");
     scanf("%c", &menu);
     switch(menu) {
