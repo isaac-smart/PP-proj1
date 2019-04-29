@@ -511,7 +511,7 @@ int Unseen_Sub_Decryption(void) {
         printf("%c", c);
         fprintf(output, "%c", c); //print c to the terminal and output.txt
     }
-    printf("\nAt Least I Tried...\n");
+    printf("\nAt Least I Tried....\n");
     return 0;
 }
 
